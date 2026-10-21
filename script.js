@@ -4,8 +4,8 @@
 /* =========================================
    1. DATA MENU (DATABASE SEMENTARA)
    =========================================
-   Tambahkan atau ubah menu di bagian ini.
-   true = tersedia, false = habis.
+   true  = menu tersedia
+   false = menu habis
 */
 
 const databaseMenu = [
@@ -95,13 +95,9 @@ const databaseMenu = [
 
 /* =========================================
    2. NOMOR WHATSAPP KASIR
-   =========================================
-   GANTI nomor di bawah dengan nomor kasir sebenarnya.
-   Format Indonesia: 62 diikuti nomor, tanpa + atau spasi.
-   Contoh format: 6281234567890
-*/
+   ========================================= */
 
-const NOMOR_WA_KASIR = "GANTI_DENGAN_NOMOR_KASIR";
+const NOMOR_WA_KASIR = "6285731157886";
 
 
 /* =========================================
@@ -121,7 +117,7 @@ const tableNumber = document.getElementById("tableNumber");
 const clearCartButton = document.getElementById("clearCart");
 const sendOrderButton = document.getElementById("sendOrder");
 
-// Menyimpan kategori yang sedang dipilih.
+// Kategori yang dipilih pelanggan.
 let kategoriAktif = "Semua";
 
 // Keranjang pesanan sementara.
@@ -146,8 +142,6 @@ function formatRupiah(angka) {
    ========================================= */
 
 function tampilkanKategori() {
-
-    // Membuat daftar kategori tanpa duplikat.
     const daftarKategori = [
         "Semua",
         ...new Set(databaseMenu.map(menu => menu.kategori))
@@ -168,7 +162,6 @@ function tampilkanKategori() {
 
         tombol.addEventListener("click", function () {
             kategoriAktif = namaKategori;
-
             tampilkanKategori();
             tampilkanMenu();
         });
@@ -183,11 +176,10 @@ function tampilkanKategori() {
    ========================================= */
 
 function buatKartuMenu(menu) {
-
     const kartu = document.createElement("article");
     kartu.className = "menu-card";
 
-    // Gambar makanan.
+    // Gambar menu.
     const gambar = document.createElement("img");
     gambar.className = "menu-image";
     gambar.src = menu.gambar;
@@ -216,7 +208,7 @@ function buatKartuMenu(menu) {
     deskripsi.className = "menu-description";
     deskripsi.textContent = menu.deskripsi;
 
-    // Harga dan status.
+    // Harga dan status ketersediaan.
     const bagianBawah = document.createElement("div");
     bagianBawah.className = "menu-bottom";
 
@@ -225,7 +217,6 @@ function buatKartuMenu(menu) {
     harga.textContent = formatRupiah(menu.harga);
 
     const status = document.createElement("span");
-
     status.className = menu.tersedia
         ? "status available"
         : "status sold-out";
@@ -236,9 +227,8 @@ function buatKartuMenu(menu) {
 
     bagianBawah.append(harga, status);
 
-    // Tombol menambahkan menu ke keranjang.
+    // Tombol tambah ke keranjang.
     const tombolTambah = document.createElement("button");
-
     tombolTambah.type = "button";
     tombolTambah.className = "add-to-cart";
 
@@ -252,7 +242,7 @@ function buatKartuMenu(menu) {
         tambahKeKeranjang(menu);
     });
 
-    // Menyusun seluruh bagian kartu.
+    // Menyusun seluruh elemen kartu.
     info.append(
         kategori,
         nama,
@@ -272,21 +262,19 @@ function buatKartuMenu(menu) {
    ========================================= */
 
 function tampilkanMenu() {
-
     const kataKunci = searchInput.value
         .trim()
         .toLowerCase();
 
-    // Menyeleksi menu yang cocok dengan pencarian.
     const hasilMenu = databaseMenu.filter(menu => {
-
         const teksMenu = (
             menu.nama + " " +
             menu.deskripsi + " " +
             menu.kategori
         ).toLowerCase();
 
-        const cocokPencarian = teksMenu.includes(kataKunci);
+        const cocokPencarian =
+            teksMenu.includes(kataKunci);
 
         const cocokKategori =
             kategoriAktif === "Semua" ||
@@ -300,15 +288,15 @@ function tampilkanMenu() {
     resultCount.textContent =
         "Menampilkan " + hasilMenu.length + " menu";
 
+    // Tampilkan pesan jika tidak ditemukan.
     emptyMessage.hidden = hasilMenu.length !== 0;
 
-    // Menampilkan kartu yang sesuai.
     hasilMenu.forEach(menu => {
         menuGrid.appendChild(buatKartuMenu(menu));
     });
 }
 
-// Pencarian bekerja setiap kali pelanggan mengetik.
+// Pencarian berjalan otomatis ketika pelanggan mengetik.
 searchInput.addEventListener("input", tampilkanMenu);
 
 
@@ -317,13 +305,11 @@ searchInput.addEventListener("input", tampilkanMenu);
    ========================================= */
 
 function tambahKeKeranjang(menu) {
-
     if (!menu.tersedia) {
         alert("Maaf, menu ini sedang habis.");
         return;
     }
 
-    // Memeriksa apakah menu sudah ada di keranjang.
     const itemAda = keranjang.find(
         item => item.id === menu.id
     );
@@ -348,10 +334,9 @@ function tambahKeKeranjang(menu) {
    ========================================= */
 
 function tampilkanKeranjang() {
-
     cartItems.replaceChildren();
 
-    // Jika keranjang masih kosong.
+    // Pesan jika keranjang kosong.
     if (keranjang.length === 0) {
         const pesanKosong = document.createElement("p");
 
@@ -367,9 +352,7 @@ function tampilkanKeranjang() {
         return;
     }
 
-    // Menampilkan setiap menu pesanan.
     keranjang.forEach(item => {
-
         const baris = document.createElement("div");
         baris.className = "cart-item";
 
@@ -380,7 +363,6 @@ function tampilkanKeranjang() {
         nama.textContent = item.nama;
 
         const rincian = document.createElement("p");
-
         rincian.textContent =
             item.jumlah + " x " +
             formatRupiah(item.harga) + " = " +
@@ -388,10 +370,10 @@ function tampilkanKeranjang() {
 
         info.append(nama, rincian);
 
-        // Tombol untuk mengatur jumlah pesanan.
         const kontrol = document.createElement("div");
         kontrol.className = "cart-item-controls";
 
+        // Tombol mengurangi jumlah.
         const tombolKurang = document.createElement("button");
         tombolKurang.type = "button";
         tombolKurang.className = "quantity-btn";
@@ -401,9 +383,11 @@ function tampilkanKeranjang() {
             "Kurangi " + item.nama
         );
 
+        // Angka jumlah.
         const jumlah = document.createElement("span");
         jumlah.textContent = item.jumlah;
 
+        // Tombol menambah jumlah.
         const tombolTambah = document.createElement("button");
         tombolTambah.type = "button";
         tombolTambah.className = "quantity-btn";
@@ -413,12 +397,12 @@ function tampilkanKeranjang() {
             "Tambah " + item.nama
         );
 
+        // Tombol menghapus item.
         const tombolHapus = document.createElement("button");
         tombolHapus.type = "button";
         tombolHapus.className = "remove-btn";
         tombolHapus.textContent = "Hapus";
 
-        // Mengurangi jumlah pesanan.
         tombolKurang.addEventListener("click", function () {
             item.jumlah -= 1;
 
@@ -429,13 +413,11 @@ function tampilkanKeranjang() {
             }
         });
 
-        // Menambah jumlah pesanan.
         tombolTambah.addEventListener("click", function () {
             item.jumlah += 1;
             tampilkanKeranjang();
         });
 
-        // Menghapus satu menu dari keranjang.
         tombolHapus.addEventListener("click", function () {
             hapusItemDariKeranjang(item.id);
         });
@@ -448,11 +430,10 @@ function tampilkanKeranjang() {
         );
 
         baris.append(info, kontrol);
-
         cartItems.appendChild(baris);
     });
 
-    // Menghitung seluruh harga pesanan.
+    // Menghitung total harga semua menu.
     const total = keranjang.reduce((jumlah, item) => {
         return jumlah + item.harga * item.jumlah;
     }, 0);
@@ -467,7 +448,6 @@ function tampilkanKeranjang() {
    ========================================= */
 
 function hapusItemDariKeranjang(id) {
-
     const index = keranjang.findIndex(
         item => item.id === id
     );
@@ -481,11 +461,10 @@ function hapusItemDariKeranjang(id) {
 
 
 /* =========================================
-   11. MENGOSONGKAN KERANJANG
+   11. MENGOSONGKAN SEMUA PESANAN
    ========================================= */
 
 clearCartButton.addEventListener("click", function () {
-
     if (keranjang.length === 0) {
         alert("Keranjang sudah kosong.");
         return;
@@ -507,8 +486,7 @@ clearCartButton.addEventListener("click", function () {
    ========================================= */
 
 sendOrderButton.addEventListener("click", function () {
-
-    // Memastikan ada menu yang dipilih.
+    // Memastikan keranjang tidak kosong.
     if (keranjang.length === 0) {
         alert("Silakan pilih menu terlebih dahulu.");
         return;
@@ -532,18 +510,14 @@ sendOrderButton.addEventListener("click", function () {
         return;
     }
 
-    // Memastikan nomor WhatsApp kasir sudah diisi.
+    // Memastikan nomor WhatsApp menggunakan format yang benar.
     if (!/^62\d{8,15}$/.test(NOMOR_WA_KASIR)) {
-        alert(
-            "Periksa NOMOR_WA_KASIR di script.js. " +
-            "Gunakan format 62 diikuti nomor, tanpa + atau spasi."
-        );
+        alert("Nomor WhatsApp kasir belum benar.");
         return;
     }
 
-    // Membuat rincian setiap item.
+    // Menyusun rincian setiap item pesanan.
     const daftarRincian = keranjang.map((item, index) => {
-
         const subtotal = item.harga * item.jumlah;
 
         return (
@@ -558,7 +532,7 @@ sendOrderButton.addEventListener("click", function () {
         return jumlah + item.harga * item.jumlah;
     }, 0);
 
-    // Menyusun isi pesan WhatsApp.
+    // Membuat isi pesan WhatsApp.
     const pesan = [
         "HALO KASIR, SAYA INGIN MEMESAN",
         "",
@@ -573,10 +547,12 @@ sendOrderButton.addEventListener("click", function () {
         "Mohon konfirmasi pesanan saya. Terima kasih."
     ].join("\n");
 
-    // Membuka WhatsApp dengan pesan yang sudah dibuat.
+    // Membuka WhatsApp kasir dengan pesan yang sudah disiapkan.
     const urlWhatsApp =
-        "https://wa.me/" + NOMOR_WA_KASIR +
-        "?text=" + encodeURIComponent(pesan);
+        "https://wa.me/" +
+        NOMOR_WA_KASIR +
+        "?text=" +
+        encodeURIComponent(pesan);
 
     window.open(
         urlWhatsApp,
@@ -590,11 +566,11 @@ sendOrderButton.addEventListener("click", function () {
    13. MENJALANKAN WEBSITE
    ========================================= */
 
-// Menampilkan tombol kategori.
+// Membuat tombol kategori.
 tampilkanKategori();
 
-// Menampilkan seluruh menu.
+// Menampilkan semua menu.
 tampilkanMenu();
 
-// Menampilkan keranjang kosong pada awal halaman.
+// Menampilkan keranjang awal yang masih kosong.
 tampilkanKeranjang();
